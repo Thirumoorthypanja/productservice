@@ -2,83 +2,111 @@ package com.dpi.serviceimpl;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dpi.entity.Product;
 import com.dpi.exception.ProductNotFoundException;
+import com.dpi.mapper.ProductMapper;
 import com.dpi.payload.ProductDto;
 import com.dpi.payload.ProductResponse;
 import com.dpi.repo.ProductRepo;
 import com.dpi.service.ProductService;
 import com.dpi.status.ProductStatus;
-import com.dpi.util.ConvertData;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
+@Transactional
 public class ProductServiceImpl implements ProductService {
 
-	@Autowired
-	private ProductRepo productRepo;
+	private final ProductRepo productRepo;
+	private final ProductMapper productMapper;
+
+	public ProductServiceImpl(ProductRepo productRepo, ProductMapper productMapper) {
+		this.productRepo = productRepo;
+		this.productMapper = productMapper;
+	}
 
 	@Override
 	public ProductResponse addProduct(ProductDto productDto) {
-		productDto.setCreateAt(LocalDateTime.now());
-		return ConvertData.convertDaoToResponse(productRepo.save(ConvertData.convertToEntity(productDto)),
-				"Product saved successfully");
+		log.info("Adding new product: {}", productDto.getName());
+		Product product = productMapper.toEntity(productDto);
+		product = productRepo.save(product);
+		return createResponse(product, "Product saved successfully");
 	}
 
 	@Override
 	public ProductResponse updateProduct(ProductDto productDto) {
+		log.info("Updating product with ID: {}", productDto.getId());
+		Product product = productRepo.findById(productDto.getId())
+				.orElseThrow(() -> new ProductNotFoundException("Product not found with id: " + productDto.getId()));
 
-		Optional<Product> productRt = productRepo.findById(productDto.getId());
-		if (productRt.isPresent()) {
-			return ConvertData.convertDaoToResponse(productRepo.save(ConvertData.convertToEntity(productDto)),
-					"Product updated successfully");
-		} else {
-			throw new ProductNotFoundException("Invalid Input");
-		}
+		productMapper.updateProductFromDto(productDto, product);
+		product = productRepo.save(product);
+		return createResponse(product, "Product updated successfully");
 	}
 
 	@Override
-	public ProductResponse deletProduct(Integer id) {
-		Optional<Product> product = productRepo.findById(id);
-		if (!product.isPresent()) {
-			throw new ProductNotFoundException("Product with id : '" + id + "' not found");
-		}
-		product.get().setStatus(ProductStatus.INACTIVE);
-		productRepo.save(product.get());
-		return ConvertData.convertDaoToResponse(product.get(), "Product deleted successfully");
+	public ProductResponse deleteProduct(Integer id) {
+		log.info("Deleting product with ID: {}", id);
+		Product product = productRepo.findById(id)
+				.orElseThrow(() -> new ProductNotFoundException("Product with id : '" + id + "' not found"));
+
+		product.setStatus(ProductStatus.INACTIVE);
+		productRepo.save(product);
+		return createResponse(product, "Product deleted successfully");
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public ProductResponse getProductByName(String name) {
-
-		List<Product> product = productRepo.findByName(name);
-		if (product.size() > 1) {
+		log.info("Fetching product by name: {}", name);
+		List<Product> products = productRepo.findByName(name);
+		if (products.isEmpty()) {
 			throw new ProductNotFoundException("Product with name '" + name + "' not found");
 		}
-		return ConvertData.convertDaoToResponse(product, "Product retrieved successfully");
+		return createResponse(products, "Product retrieved successfully");
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public ProductResponse getAllProducts() {
+		log.info("Fetching all products");
 		List<Product> products = (List<Product>) productRepo.findAll();
 		if (products.isEmpty()) {
 			throw new ProductNotFoundException("No products available");
 		}
-		return ConvertData.convertDaoToResponse(products, "All products retrieved successfully");
+		return createResponse(products, "All products retrieved successfully");
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public ProductResponse searchByKeyword(String keyword) {
-		List<Product> nameContainProducts = productRepo.findByNameContainingIgnoreCase(keyword);
-		if (nameContainProducts.isEmpty()) {
+		log.info("Searching products with keyword: {}", keyword);
+		List<Product> products = productRepo.findByNameContainingIgnoreCase(keyword);
+		if (products.isEmpty()) {
 			throw new ProductNotFoundException("No products available");
 		}
-		return ConvertData.convertDaoToResponse(nameContainProducts, "All products retrieved successfully");
+		return createResponse(products, "Products retrieved successfully");
+	}
 
+	private ProductResponse createResponse(Product product, String message) {
+		ProductResponse response = new ProductResponse();
+		response.setData(List.of(product));
+		response.setMessage(message);
+		response.setTimestamp(LocalDateTime.now());
+		return response;
+	}
+
+	private ProductResponse createResponse(List<Product> products, String message) {
+		ProductResponse response = new ProductResponse();
+		response.setData(products);
+		response.setMessage(message);
+		response.setTimestamp(LocalDateTime.now());
+		return response;
 	}
 
 }

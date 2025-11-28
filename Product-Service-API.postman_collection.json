@@ -1,0 +1,175 @@
+{
+    "info": {
+        "name": "E-Commerce API",
+        "description": "Collection for Product Service REST API with international e-commerce standards",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Create Product",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"sku\": \"PROD-001\",\n  \"name\": \"Wireless Headphones\",\n  \"description\": \"Premium wireless headphones with noise cancellation and 30-hour battery life\",\n  \"price\": 199.99,\n  \"currency\": \"USD\",\n  \"quantity\": 100,\n  \"discount\": 10.0,\n  \"weight\": 0.25,\n  \"category\": \"Electronics\",\n  \"brand\": \"TechBrand\",\n  \"imageUrl\": \"https://example.com/images/headphones.jpg\",\n  \"createdBy\": \"admin\"\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:8888/v1/product",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8888",
+                    "path": [
+                        "v1",
+                        "product"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Update Product",
+            "request": {
+                "method": "PUT",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"id\": 1,\n  \"sku\": \"PROD-001\",\n  \"name\": \"Wireless Headphones Pro\",\n  \"description\": \"Premium wireless headphones with active noise cancellation and 40-hour battery life\",\n  \"price\": 249.99,\n  \"currency\": \"USD\",\n  \"quantity\": 150,\n  \"discount\": 15.0,\n  \"weight\": 0.28,\n  \"category\": \"Electronics\",\n  \"brand\": \"TechBrand\",\n  \"imageUrl\": \"https://example.com/images/headphones-pro.jpg\",\n  \"updatedBy\": \"admin\",\n  \"updateReason\": \"Price and stock update\"\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:8888/v1/product",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8888",
+                    "path": [
+                        "v1",
+                        "product"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Get All Products",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8888/v1/product",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8888",
+                    "path": [
+                        "v1",
+                        "product"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Get Product by Name",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8888/v1/product/Wireless Headphones",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8888",
+                    "path": [
+                        "v1",
+                        "product",
+                        "Wireless Headphones"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Search Products by Keyword",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8888/v1/product/search?keyword=wireless",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8888",
+                    "path": [
+                        "v1",
+                        "product",
+                        "search"
+                    ],
+                    "query": [
+                        {
+                            "key": "keyword",
+                            "value": "wireless"
+                        }
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Delete Product",
+            "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8888/v1/product/1",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8888",
+                    "path": [
+                        "v1",
+                        "product",
+                        "1"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Swagger UI",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8888/swagger-ui.html",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8888",
+                    "path": [
+                        "swagger-ui.html"
+                    ]
+                }
+            },
+            "response": []
+        }
+    ]
+}
